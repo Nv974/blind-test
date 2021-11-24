@@ -17,7 +17,7 @@ import * as appActions from '../store/actions/app';
 //components
 import Count from '../components/Count';
 
-const Play = () => {
+const Play = props => {
     //vars
     const dispatch = useDispatch();
 
@@ -45,6 +45,16 @@ const Play = () => {
         }
         playSound();
     }, []);
+
+    // changement automatique quand la piste
+    // à été écoutée + de 30 sec
+    useEffect(() => {
+        if (time === breakPoint) {
+            onChangeTrackHandler();
+        } else if (time === 1) {
+            props.navigation.navigate('results');
+        }
+    }, [time]);
 
     // fonctionnalités react hook form
     const {
@@ -78,6 +88,7 @@ const Play = () => {
         reset();
 
         let numberFound = 0;
+        // il faut trouvé au moins un artiste du morceau
         tracks[currentIndex].track.artists.forEach(artist =>
             formatData(artist.name) === formatData(data.artist)
                 ? numberFound++
@@ -92,9 +103,11 @@ const Play = () => {
         }
     };
 
-    const onSubmitTitleHandler = data => {
+    const onSubmitTitleHandler = (data, currentTime) => {
         console.log(data);
         reset();
+        currentTime = time;
+        setbreakPoint(currentTime - 30);
 
         const formatedApiData = formatData(tracks[currentIndex].track.name);
         const formatedInputData = formatData(data.title);
@@ -111,27 +124,24 @@ const Play = () => {
         onChangeTrackHandler();
     };
 
-    const onPressNext = () => {
+    // changement manuel de piste
+    const onPressNext = currentTime => {
         console.log('next');
         setShowTitleInput(!showTitleInput);
 
         if (showTitleInput) {
+            currentTime = time;
             setCurrentIndex(currentIndex + 1);
             onChangeTrackHandler();
+            setbreakPoint(currentTime - 30);
         }
     };
-
-    useEffect(() => {
-        if (time === breakPoint) {
-            onChangeTrackHandler();
-            setbreakPoint(0);
-        }
-    }, [time]);
 
     const onChangeTrackHandler = () => {
         console.log('change track');
         sound.stopAsync();
-        playNext();
+        setCurrentIndex(currentIndex + 1);
+        playNext(currentIndex);
     };
 
     async function playNext() {
