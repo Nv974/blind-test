@@ -18,7 +18,7 @@ export const connect = () => {
             method: 'POST',
         }).then(tokenResponse => {
             dispatch(fetchToken(tokenResponse.data.access_token));
-            axios('https://api.spotify.com/v1/playlists/6coGa7itz86Mb9xoGbaczY', {
+            axios('https://api.spotify.com/v1/playlists/1cUR3W6M4cjvbwKGolLC68', {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + tokenResponse.data.access_token,

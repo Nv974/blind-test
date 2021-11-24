@@ -11,8 +11,6 @@ const enhancer = composeEnhancers(applyMiddleware(thunk));
 const store = createStore(reducer, enhancer);
 import { Provider } from 'react-redux';
 
-//screens
-import Play from './src/screens/Play';
 import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
