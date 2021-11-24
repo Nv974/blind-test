@@ -3,6 +3,7 @@ import { FETCH_TOKEN, SET_SCORE } from '../actions/app';
 const initialState = {
     token: '',
     score: 0,
+    currentSound: '',
 };
 
 export default (state = initialState, action = {}) => {
@@ -12,7 +13,6 @@ export default (state = initialState, action = {}) => {
                 ...state,
                 token: action.token,
             };
-
         case SET_SCORE:
             return {
                 ...state,

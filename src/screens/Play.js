@@ -8,6 +8,8 @@ import {
     Button,
 } from 'react-native';
 
+import { Audio } from 'expo-av';
+
 import { useForm, Controller } from 'react-hook-form';
 
 //redux
@@ -25,6 +27,21 @@ const Play = () => {
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
     const score = useSelector(state => state.app.score);
+    const [sound, setSound] = useState();
+
+    useEffect(() => {
+        async function playSound() {
+            console.log('Loading Sound');
+            const { sound } = await Audio.Sound.createAsync({
+                uri: tracks[currentIndex].track.preview_url,
+            });
+            setSound(sound);
+
+            console.log('Playing Sound');
+            await sound.playAsync();
+        }
+        playSound();
+    }, []);
 
     // fonctionnalités react hook form
     const {
@@ -88,6 +105,7 @@ const Play = () => {
         }
         setShowTitleInput(false);
         setCurrentIndex(currentIndex + 1);
+        onChangeTrackHandler();
     };
 
     const onPressNext = () => {
@@ -96,8 +114,26 @@ const Play = () => {
 
         if (showTitleInput) {
             setCurrentIndex(currentIndex + 1);
+            onChangeTrackHandler();
         }
     };
+
+    const onChangeTrackHandler = () => {
+        console.log('change track');
+        sound.stopAsync();
+        playNext();
+    };
+
+    async function playNext() {
+        console.log('Loading Sound');
+        const { sound } = await Audio.Sound.createAsync({
+            uri: tracks[currentIndex + 1].track.preview_url,
+        });
+        setSound(sound);
+
+        console.log('Playing Sound');
+        await sound.playAsync();
+    }
 
     return (
         <View style={styles.container}>
