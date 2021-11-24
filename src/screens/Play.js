@@ -7,27 +7,30 @@ import {
     TextInput,
     Button,
 } from 'react-native';
-
 import { Audio } from 'expo-av';
-
 import { useForm, Controller } from 'react-hook-form';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 import * as appActions from '../store/actions/app';
 
-const Play = () => {
+//components
+import Count from '../components/Count';
+
+const Play = props => {
     //vars
     const dispatch = useDispatch();
 
     //states locaux
     const [showTitleInput, setShowTitleInput] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [sound, setSound] = useState();
+    const [time, setTime] = useState(60);
+    const [breakPoint, setbreakPoint] = useState(30);
 
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
     const score = useSelector(state => state.app.score);
-    const [sound, setSound] = useState();
 
     useEffect(() => {
         async function playSound() {
@@ -42,6 +45,16 @@ const Play = () => {
         }
         playSound();
     }, []);
+
+    // changement automatique quand la piste
+    // à été écoutée + de 30 sec
+    useEffect(() => {
+        if (time === breakPoint) {
+            onChangeTrackHandler();
+        } else if (time === 1) {
+            props.navigation.navigate('results');
+        }
+    }, [time]);
 
     // fonctionnalités react hook form
     const {
@@ -75,6 +88,7 @@ const Play = () => {
         reset();
 
         let numberFound = 0;
+        // il faut trouvé au moins un artiste du morceau
         tracks[currentIndex].track.artists.forEach(artist =>
             formatData(artist.name) === formatData(data.artist)
                 ? numberFound++
@@ -89,9 +103,11 @@ const Play = () => {
         }
     };
 
-    const onSubmitTitleHandler = data => {
+    const onSubmitTitleHandler = (data, currentTime) => {
         console.log(data);
         reset();
+        currentTime = time;
+        setbreakPoint(currentTime - 30);
 
         const formatedApiData = formatData(tracks[currentIndex].track.name);
         const formatedInputData = formatData(data.title);
@@ -108,20 +124,24 @@ const Play = () => {
         onChangeTrackHandler();
     };
 
-    const onPressNext = () => {
+    // changement manuel de piste
+    const onPressNext = currentTime => {
         console.log('next');
         setShowTitleInput(!showTitleInput);
 
         if (showTitleInput) {
+            currentTime = time;
             setCurrentIndex(currentIndex + 1);
             onChangeTrackHandler();
+            setbreakPoint(currentTime - 30);
         }
     };
 
     const onChangeTrackHandler = () => {
         console.log('change track');
         sound.stopAsync();
-        playNext();
+        setCurrentIndex(currentIndex + 1);
+        playNext(currentIndex);
     };
 
     async function playNext() {
@@ -137,6 +157,7 @@ const Play = () => {
 
     return (
         <View style={styles.container}>
+            <Count time={time} setTime={setTime} />
             <Text> Score : {score}</Text>
             <Text> ARTISTE : {tracks[currentIndex].track.artists[0].name}</Text>
             <Text> TITRE : {tracks[currentIndex].track.name} </Text>
