@@ -7,14 +7,15 @@ import {
     TextInput,
     Button,
 } from 'react-native';
-
 import { Audio } from 'expo-av';
-
 import { useForm, Controller } from 'react-hook-form';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 import * as appActions from '../store/actions/app';
+
+//components
+import Count from '../components/Count';
 
 const Play = () => {
     //vars
@@ -23,11 +24,13 @@ const Play = () => {
     //states locaux
     const [showTitleInput, setShowTitleInput] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [sound, setSound] = useState();
+    const [time, setTime] = useState(60);
+    const [breakPoint, setbreakPoint] = useState(30);
 
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
     const score = useSelector(state => state.app.score);
-    const [sound, setSound] = useState();
 
     useEffect(() => {
         async function playSound() {
@@ -118,6 +121,13 @@ const Play = () => {
         }
     };
 
+    useEffect(() => {
+        if (time === breakPoint) {
+            onChangeTrackHandler();
+            setbreakPoint(0);
+        }
+    }, [time]);
+
     const onChangeTrackHandler = () => {
         console.log('change track');
         sound.stopAsync();
@@ -137,6 +147,7 @@ const Play = () => {
 
     return (
         <View style={styles.container}>
+            <Count time={time} setTime={setTime} />
             <Text> Score : {score}</Text>
             <Text> ARTISTE : {tracks[currentIndex].track.artists[0].name}</Text>
             <Text> TITRE : {tracks[currentIndex].track.name} </Text>
