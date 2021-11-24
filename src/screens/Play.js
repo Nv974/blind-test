@@ -3,24 +3,28 @@ import {
     View,
     Text,
     StyleSheet,
-    Button,
     TouchableOpacity,
     TextInput,
-    ActivityIndicator,
+    Button,
 } from 'react-native';
 
 import { useForm, Controller } from 'react-hook-form';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
+import * as appActions from '../store/actions/app';
 
 const Play = () => {
+    //vars
+    const dispatch = useDispatch();
+
     //states locaux
-    const [isStarted, setisStarted] = useState(false);
     const [showTitleInput, setShowTitleInput] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
+    const score = useSelector(state => state.app.score);
 
     // fonctionnalités react hook form
     const {
@@ -30,22 +34,78 @@ const Play = () => {
         formState: { errors },
     } = useForm();
 
+    // formate les caractères et espaces de l'api et des inputs
+    // tout en minuscule / sans caractères spéciaux / sans espaces
+    const formatData = data => {
+        return data
+            .replace(/[&\/\\#,+´’!()~%.'":*?<>{} ]/g, '')
+            .replace(/[éèêëęėēÉÈÊËĘĖĒ€]/g, 'e')
+            .replace(/[àâªæááäãåāÀÂªÆÁÄÃÅĀ]/g, 'a')
+            .replace(/[îïìíįīÎÏÌÍĮĪ]/g, 'i')
+            .replace(/[ôœºöòóõøōÔŒºÖÒÓÕÕØŌ]/g, 'o')
+            .replace(/[ûùüúūÛÙÜÚŪ]/g, 'u')
+            .replace(/[ÿŸ]/g, 'y')
+            .replace(/[çćčÇĆČ]/g, 'c')
+            .replace(/[ñń]/g, 'n')
+            .replace(/[$]/g, 's')
+            .toLowerCase();
+    };
+
     // handlers
     const onSubmitArtistNameHandler = data => {
         console.log(data);
         setShowTitleInput(true);
         reset();
+
+        let numberFound = 0;
+        tracks[currentIndex].track.artists.forEach(artist =>
+            formatData(artist.name) === formatData(data.artist)
+                ? numberFound++
+                : numberFound,
+        );
+
+        if (numberFound !== 0) {
+            console.log("bravo c'est le nom de l'artiste");
+            dispatch(appActions.setScore());
+        } else {
+            console.log("ce n'est pas le nom de l'artiste");
+        }
     };
 
     const onSubmitTitleHandler = data => {
         console.log(data);
-        setShowTitleInput(false);
         reset();
+
+        const formatedApiData = formatData(tracks[currentIndex].track.name);
+        const formatedInputData = formatData(data.title);
+
+        console.log(formatedApiData);
+
+        if (formatedApiData === formatedInputData) {
+            dispatch(appActions.setScore());
+        } else {
+            console.log("Ce n'est pas le bon titre");
+        }
+        setShowTitleInput(false);
+        setCurrentIndex(currentIndex + 1);
+    };
+
+    const onPressNext = () => {
+        console.log('next');
+        setShowTitleInput(!showTitleInput);
+
+        if (showTitleInput) {
+            setCurrentIndex(currentIndex + 1);
+        }
     };
 
     return (
         <View style={styles.container}>
+            <Text> Score : {score}</Text>
+            <Text> ARTISTE : {tracks[currentIndex].track.artists[0].name}</Text>
+            <Text> TITRE : {tracks[currentIndex].track.name} </Text>
             <View>
+                <Button title='PASSER' onPress={onPressNext} />
                 <Text>{showTitleInput ? 'Titre du morceau' : "Nom de l'artiste"}</Text>
                 <View
                     style={{
