@@ -16,10 +16,7 @@ const Home = props => {
     }, []);
     return (
         <View style={styles.container}>
-            <Button
-                title='Play'
-                onPress={() => playlistLoaded && props.navigation.navigate('play')}
-            />
+            <Button title='Play' onPress={() => props.navigation.navigate('play')} />
         </View>
     );
 };

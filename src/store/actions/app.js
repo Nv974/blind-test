@@ -14,3 +14,12 @@ export const setScore = () => {
         type: SET_SCORE,
     };
 };
+
+export const SET_TRACK_RESULT = 'SET_TRACK_RESULT';
+
+export const setTrackResult = obj => {
+    return {
+        type: SET_TRACK_RESULT,
+        obj,
+    };
+};

@@ -27,6 +27,7 @@ const Play = props => {
     const [sound, setSound] = useState();
     const [time, setTime] = useState(60);
     const [breakPoint, setbreakPoint] = useState(30);
+    const [artistIsFound, setArtistIsFound] = useState(false);
 
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
@@ -51,8 +52,11 @@ const Play = props => {
     useEffect(() => {
         if (time === breakPoint) {
             onChangeTrackHandler();
-        } else if (time === 1) {
-            props.navigation.navigate('results');
+        } else if (time === 0) {
+            sound.stopAsync();
+            sound.unloadAsync();
+            dispatch(appActions.setTrackResult(trackResult(false)));
+            props.navigation.navigate('score');
         }
     }, [time]);
 
@@ -81,9 +85,21 @@ const Play = props => {
             .toLowerCase();
     };
 
+    function trackResult(titleIsFound) {
+        const trackObj = {
+            trackId: tracks[currentIndex].track.id,
+            artist: tracks[currentIndex].track.artists[0].name,
+            title: tracks[currentIndex].track.name,
+            artistIsFound: artistIsFound,
+            image: tracks[currentIndex].track.album.images[0].url,
+            titleIsFound,
+        };
+
+        return trackObj;
+    }
+
     // handlers
     const onSubmitArtistNameHandler = data => {
-        console.log(data);
         setShowTitleInput(true);
         reset();
 
@@ -98,8 +114,10 @@ const Play = props => {
         if (numberFound !== 0) {
             console.log("bravo c'est le nom de l'artiste");
             dispatch(appActions.setScore());
+            setArtistIsFound(true);
         } else {
             console.log("ce n'est pas le nom de l'artiste");
+            setArtistIsFound(false);
         }
     };
 
@@ -116,8 +134,10 @@ const Play = props => {
 
         if (formatedApiData === formatedInputData) {
             dispatch(appActions.setScore());
+            dispatch(appActions.setTrackResult(trackResult(true)));
         } else {
             console.log("Ce n'est pas le bon titre");
+            dispatch(appActions.setTrackResult(trackResult(false)));
         }
         setShowTitleInput(false);
         setCurrentIndex(currentIndex + 1);
@@ -128,12 +148,14 @@ const Play = props => {
     const onPressNext = currentTime => {
         console.log('next');
         setShowTitleInput(!showTitleInput);
+        setArtistIsFound(false);
 
         if (showTitleInput) {
             currentTime = time;
             setCurrentIndex(currentIndex + 1);
             onChangeTrackHandler();
             setbreakPoint(currentTime - 30);
+            dispatch(appActions.setTrackResult(trackResult(false)));
         }
     };
 
@@ -157,7 +179,7 @@ const Play = props => {
 
     return (
         <View style={styles.container}>
-            <Count time={time} setTime={setTime} />
+            {time > 0 && <Count time={time} setTime={setTime} />}
             <Text> Score : {score}</Text>
             <Text> ARTISTE : {tracks[currentIndex].track.artists[0].name}</Text>
             <Text> TITRE : {tracks[currentIndex].track.name} </Text>

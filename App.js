@@ -1,6 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 
 //Store
 import reducer from './src/store/reducers/rootReducer';
@@ -12,11 +10,13 @@ const store = createStore(reducer, enhancer);
 import { Provider } from 'react-redux';
 
 import AppNavigator from './src/navigation/AppNavigator';
+import Score from './src/screens/Score';
 
 export default function App() {
     return (
         <Provider store={store}>
             <AppNavigator />
+            {/* <Score /> */}
         </Provider>
     );
 }
