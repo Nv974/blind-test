@@ -6,7 +6,7 @@ const Count = ({ time, setTime }) => {
         setTimeout(() => {
             setTime(time - 1);
         }, 1000);
-    } while (time === -1);
+    } while (time === 0);
 
     return (
         <View>
