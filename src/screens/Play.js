@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -6,13 +6,31 @@ import {
     Button,
     TouchableOpacity,
     TextInput,
+    ActivityIndicator,
 } from 'react-native';
 
 import { useForm, Controller } from 'react-hook-form';
 
+//redux
+import { useSelector, useDispatch } from 'react-redux';
+import * as apiActions from '../store/actions/api';
+
 const Play = () => {
+    //vars
+    const dispatch = useDispatch();
+
+    //states locaux
     const [isStarted, setisStarted] = useState(false);
     const [showTitleInput, setShowTitleInput] = useState(false);
+
+    //states globaux
+    const tracks = useSelector(state => state.api.tracks);
+    const playlistLoaded = useSelector(state => state.api.playlistLoaded);
+
+    // cycles de vie
+    useEffect(() => {
+        dispatch(apiActions.connect());
+    }, []);
 
     // fonctionnalités react hook form
     const {
@@ -22,6 +40,7 @@ const Play = () => {
         formState: { errors },
     } = useForm();
 
+    // handlers
     const onSubmitArtistNameHandler = data => {
         console.log(data);
         setShowTitleInput(true);
@@ -34,7 +53,9 @@ const Play = () => {
         reset();
     };
 
-    return (
+    return !playlistLoaded ? (
+        <ActivityIndicator size='large' />
+    ) : (
         <View style={styles.container}>
             {!isStarted && <Button title='Play' onPress={() => setisStarted(true)} />}
             {isStarted && (
