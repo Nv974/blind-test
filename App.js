@@ -13,23 +13,12 @@ import { Provider } from 'react-redux';
 
 //screens
 import Play from './src/screens/Play';
+import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
     return (
-        <View style={styles.container}>
-            <Provider store={store}>
-                <Play />
-            </Provider>
-            <StatusBar style='auto' />
-        </View>
+        <Provider store={store}>
+            <AppNavigator />
+        </Provider>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
