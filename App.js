@@ -1,4 +1,7 @@
 import React from 'react';
+import { ActivityIndicator, StatusBar } from 'react-native';
+
+import { useFonts } from 'expo-font';
 
 //Store
 import reducer from './src/store/reducers/rootReducer';
@@ -13,10 +16,20 @@ import AppNavigator from './src/navigation/AppNavigator';
 import Score from './src/screens/Score';
 
 export default function App() {
+    const [loaded] = useFonts({
+        regular: require('./assets/fonts/Ubuntu/Ubuntu-Regular.ttf'),
+        bold: require('./assets/fonts/Ubuntu/Ubuntu-Bold.ttf'),
+        medium: require('./assets/fonts/Ubuntu/Ubuntu-Medium.ttf'),
+    });
+
+    if (!loaded) {
+        return <ActivityIndicator />;
+    }
     return (
         <Provider store={store}>
             <AppNavigator />
             {/* <Score /> */}
+            <StatusBar style='light' />
         </Provider>
     );
 }
