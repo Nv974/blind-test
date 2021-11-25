@@ -5,11 +5,10 @@ import {
     StyleSheet,
     TouchableOpacity,
     TextInput,
-    Button,
     KeyboardAvoidingView,
     Platform,
-    Image,
     ImageBackground,
+    ActivityIndicator,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { useForm, Controller } from 'react-hook-form';
@@ -116,20 +115,26 @@ const Play = props => {
         setShowTitleInput(true);
         reset();
 
-        let numberFound = 0;
-        // il faut trouvé au moins un artiste du morceau
-        tracks[currentIndex].track.artists.forEach(artist =>
-            formatData(artist.name) === formatData(data.artist)
-                ? numberFound++
-                : numberFound,
-        );
+        if (data.artist !== undefined && !killTime) {
+            let numberFound = 0;
 
-        if (numberFound !== 0) {
-            console.log("bravo c'est le nom de l'artiste");
-            dispatch(appActions.setScore());
-            setArtistIsFound(true);
+            // il faut trouvé au moins un artiste du morceau
+            tracks[currentIndex].track.artists.forEach(artist =>
+                formatData(artist.name) === formatData(data.artist)
+                    ? numberFound++
+                    : numberFound,
+            );
+
+            if (numberFound !== 0) {
+                console.log("bravo c'est le nom de l'artiste");
+                dispatch(appActions.setScore());
+                setArtistIsFound(true);
+            } else {
+                console.log("ce n'est pas le nom de l'artiste");
+                setArtistIsFound(false);
+            }
         } else {
-            console.log("ce n'est pas le nom de l'artiste");
+            console.log("aucun nom 'artiste");
             setArtistIsFound(false);
         }
     };
@@ -140,34 +145,24 @@ const Play = props => {
         currentTime = time;
         setbreakPoint(currentTime - 30);
 
-        const formatedApiData = formatData(tracks[currentIndex].track.name);
-        const formatedInputData = formatData(data.title);
-
-        if (formatedApiData === formatedInputData) {
-            dispatch(appActions.setScore());
-            dispatch(appActions.setTrackResult(trackResult(true)));
+        if (data.title !== undefined) {
+            const formatedApiData = formatData(tracks[currentIndex].track.name);
+            const formatedInputData = formatData(data.title);
+            if (formatedApiData === formatedInputData) {
+                dispatch(appActions.setScore());
+                dispatch(appActions.setTrackResult(trackResult(true)));
+            } else {
+                console.log("Ce n'est pas le bon titre");
+                dispatch(appActions.setTrackResult(trackResult(false)));
+            }
         } else {
-            console.log("Ce n'est pas le bon titre");
             dispatch(appActions.setTrackResult(trackResult(false)));
+            console.log('pas de titre');
         }
+
         setShowTitleInput(false);
         setCurrentIndex(currentIndex + 1);
         onChangeTrackHandler();
-    };
-
-    // changement manuel de piste
-    const onPressNext = currentTime => {
-        console.log('next');
-        setShowTitleInput(!showTitleInput);
-        setArtistIsFound(false);
-
-        if (showTitleInput) {
-            currentTime = time;
-            setCurrentIndex(currentIndex + 1);
-            onChangeTrackHandler();
-            setbreakPoint(currentTime - 30);
-            dispatch(appActions.setTrackResult(trackResult(false)));
-        }
     };
 
     const onChangeTrackHandler = () => {
@@ -211,22 +206,21 @@ const Play = props => {
                 <View>
                     <Text style={styles.score}> Score : {score}</Text>
                 </View>
+
                 <ImageBackground
                     source={{
                         uri: !killTime
                             ? tracks[currentIndex].track.album.images[0].url
                             : tracks[currentIndex - 1].track.album.images[0].url,
                     }}
-                    style={{ width: 200, height: 200 }}
+                    style={{
+                        width: 200,
+                        height: 200,
+                        flexDirection: 'column-reverse',
+                    }}
                     blurRadius={killTime ? 0 : 40}
+                    borderRadius={7}
                 >
-                    {!killTime && (
-                        <View style={styles.question}>
-                            <Text>
-                                <Ionicons name='help-outline' size={50} color='white' />
-                            </Text>
-                        </View>
-                    )}
                     <View>
                         {!killTime && (
                             <Text style={styles.label}>
@@ -234,6 +228,13 @@ const Play = props => {
                             </Text>
                         )}
                     </View>
+                    {!killTime && (
+                        <View style={styles.question}>
+                            <Text>
+                                <Ionicons name='help-outline' size={50} color='white' />
+                            </Text>
+                        </View>
+                    )}
                 </ImageBackground>
                 <Text style={styles.artist}>
                     {artistIsFound &&
@@ -245,17 +246,6 @@ const Play = props => {
                             tracks[currentIndex - 1].track.name}
                 </Text>
 
-                <TouchableOpacity
-                    disabled={killTime ? true : false}
-                    onPress={onPressNext}
-                    style={styles.next}
-                >
-                    <Text
-                        style={{ color: '#029FB8', fontSize: 22, fontFamily: 'regular' }}
-                    >
-                        Passer
-                    </Text>
-                </TouchableOpacity>
                 <View>
                     <View
                         style={{
@@ -280,7 +270,7 @@ const Play = props => {
                                         )}
                                     />
                                 )}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 name='artist'
                             />
                         ) : (
@@ -300,7 +290,7 @@ const Play = props => {
                                         )}
                                     />
                                 )}
-                                rules={{ required: true }}
+                                rules={{ required: false }}
                                 name='title'
                             />
                         )}
@@ -308,13 +298,27 @@ const Play = props => {
                         <TouchableOpacity
                             activeOpacity={0.8}
                             style={styles.submit}
-                            onPress={handleSubmit(
-                                !showTitleInput
-                                    ? onSubmitArtistNameHandler
-                                    : onSubmitTitleHandler,
-                            )}
+                            onPress={
+                                !killTime
+                                    ? handleSubmit(
+                                          !showTitleInput
+                                              ? onSubmitArtistNameHandler
+                                              : onSubmitTitleHandler,
+                                      )
+                                    : () => console.log('un instant')
+                            }
                         >
-                            <Text style={{ color: 'white' }}> OK </Text>
+                            <Text style={{ color: 'white' }}>
+                                {killTime ? (
+                                    <ActivityIndicator color='white' />
+                                ) : (
+                                    <Ionicons
+                                        name='checkmark-outline'
+                                        color='white'
+                                        size={32}
+                                    />
+                                )}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -352,7 +356,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     label: {
-        fontSize: 25,
+        fontSize: 22,
         color: 'white',
         alignSelf: 'center',
         backgroundColor: 'rgba(0, 121, 185, 0.6)',
@@ -365,7 +369,7 @@ const styles = StyleSheet.create({
     question: {
         position: 'absolute',
         left: '50%',
-        top: '40%',
+        top: '25%',
         transform: [{ translateX: -40 }],
         backgroundColor: 'rgba(0,0,0, 0.3)',
         width: 80,
@@ -377,6 +381,7 @@ const styles = StyleSheet.create({
     score: {
         fontSize: 25,
         color: 'white',
+        fontFamily: 'regular',
     },
     next: {
         backgroundColor: 'white',
