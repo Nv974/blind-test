@@ -55,12 +55,6 @@ const Score = props => {
                         <Image source={{ uri: item.image }} style={styles.image} />
                     </View>
                 )}
-                ListFooterComponent={() => (
-                    <Button
-                        title='Home'
-                        onPress={() => props.navigation.navigate('home')}
-                    />
-                )}
             />
         </LinearGradient>
     );
