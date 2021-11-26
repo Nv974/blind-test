@@ -9,9 +9,11 @@ import {
     Platform,
     ImageBackground,
     ActivityIndicator,
+    Dimensions,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { useForm, Controller } from 'react-hook-form';
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -37,6 +39,7 @@ const Play = props => {
     const [breakPoint, setbreakPoint] = useState(30);
     const [artistIsFound, setArtistIsFound] = useState(false);
     const [killTime, setKillTime] = useState(false);
+    const [error, setError] = useState(2);
 
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
@@ -112,9 +115,7 @@ const Play = props => {
 
     // handlers
     const onSubmitArtistNameHandler = data => {
-        setShowTitleInput(true);
         reset();
-
         if (data.artist !== undefined && !killTime) {
             let numberFound = 0;
 
@@ -126,47 +127,75 @@ const Play = props => {
             );
 
             if (numberFound !== 0) {
-                console.log("bravo c'est le nom de l'artiste");
+                const artistName = tracks[currentIndex].track.artists[0].name;
+                showSuccess(artistName);
                 dispatch(appActions.setScore());
                 setArtistIsFound(true);
+                setShowTitleInput(true);
+                setError(2);
             } else {
-                console.log("ce n'est pas le nom de l'artiste");
-                setArtistIsFound(false);
+                showError();
+                if (error > 1) {
+                    setError(error - 1);
+                } else {
+                    setArtistIsFound(false);
+                    setShowTitleInput(true);
+                    setError(2);
+                }
             }
         } else {
-            console.log("aucun nom 'artiste");
             setArtistIsFound(false);
+            setShowTitleInput(true);
+            setError(2);
         }
     };
 
     const onSubmitTitleHandler = (data, currentTime) => {
-        console.log(data);
         reset();
-        currentTime = time;
-        setbreakPoint(currentTime - 30);
-
         if (data.title !== undefined) {
             const formatedApiData = formatData(tracks[currentIndex].track.name);
             const formatedInputData = formatData(data.title);
             if (formatedApiData === formatedInputData) {
                 dispatch(appActions.setScore());
                 dispatch(appActions.setTrackResult(trackResult(true)));
+                currentTime = time;
+                setbreakPoint(currentTime - 30);
+                showSuccess(tracks[currentIndex].track.name);
+                setShowTitleInput(false);
+                setCurrentIndex(currentIndex + 1);
+                onChangeTrackHandler();
+                setError(2);
             } else {
-                console.log("Ce n'est pas le bon titre");
-                dispatch(appActions.setTrackResult(trackResult(false)));
+                if (error > 1) {
+                    showError();
+                    setError(error - 1);
+                } else {
+                    showError();
+                    dispatch(appActions.setTrackResult(trackResult(false)));
+                    setShowTitleInput(false);
+                    setError(2);
+                    currentTime = time;
+                    setbreakPoint(currentTime - 30);
+                    setShowTitleInput(false);
+                    setCurrentIndex(currentIndex + 1);
+                    onChangeTrackHandler();
+                }
             }
         } else {
+            setError(2);
             dispatch(appActions.setTrackResult(trackResult(false)));
-            console.log('pas de titre');
+            currentTime = time;
+            setbreakPoint(currentTime - 30);
+            showSuccess(tracks[currentIndex].track.name);
+            setShowTitleInput(false);
+            setCurrentIndex(currentIndex + 1);
+            onChangeTrackHandler();
         }
-
-        setShowTitleInput(false);
-        setCurrentIndex(currentIndex + 1);
-        onChangeTrackHandler();
     };
 
     const onChangeTrackHandler = () => {
         setKillTime(true);
+        setError(2);
 
         setTimeout(() => {
             sound.stopAsync();
@@ -189,6 +218,72 @@ const Play = props => {
         setKillTime(false);
     }
 
+    //toast
+    const showSuccess = value => {
+        Toast.show({
+            type: 'success',
+            text1: 'Bonne réponse',
+            text2: "Il s'agit de " + value,
+        });
+    };
+
+    const showError = () => {
+        Toast.show({
+            type: 'error',
+            text1: error > 1 ? 'Attention!' : 'Dommage!',
+            text2:
+                error > 1 ? 'Il vous reste une chance' : "Ce n'est pas la bonne réponse",
+        });
+    };
+
+    const toastConfig = {
+        success: props => (
+            <BaseToast
+                {...props}
+                style={{
+                    borderLeftColor: '#009432',
+                    width: 200,
+                    position: 'absolute',
+                    right: -20,
+                }}
+                contentContainerStyle={{ paddingHorizontal: 15 }}
+                text1Style={{
+                    fontSize: 17,
+                    fontWeight: '400',
+                    color: '#009432',
+                    fontFamily: 'bold',
+                }}
+                text2Style={{
+                    fontSize: 16,
+                    fontWeight: '400',
+                    fontFamily: 'regular',
+                }}
+            />
+        ),
+
+        error: props => (
+            <ErrorToast
+                {...props}
+                text1Style={{
+                    fontSize: 17,
+                    color: '#e84118',
+                    fontFamily: 'bold',
+                }}
+                text2Style={{
+                    fontSize: 16,
+                    fontFamily: 'regular',
+                }}
+                style={{
+                    borderLeftColor: '#e84118',
+                    width: 270,
+                    position: 'absolute',
+                    right: -90,
+                    padding: 0,
+                }}
+            />
+        ),
+    };
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -203,8 +298,9 @@ const Play = props => {
                         setKillTime={setKillTime}
                     />
                 )}
+                <Toast config={toastConfig} />
                 <View>
-                    <Text style={styles.score}> Score : {score}</Text>
+                    <Text style={styles.score}>Score : {score}</Text>
                 </View>
 
                 <ImageBackground
