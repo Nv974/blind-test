@@ -3,7 +3,7 @@ import axios from 'axios';
 import { encode as btoa } from 'base-64';
 import { fetchToken } from './app';
 
-export const connect = () => {
+export const connect = id => {
     return dispatch => {
         axios('https://accounts.spotify.com/api/token', {
             headers: {
@@ -18,7 +18,7 @@ export const connect = () => {
             method: 'POST',
         }).then(tokenResponse => {
             dispatch(fetchToken(tokenResponse.data.access_token));
-            axios('https://api.spotify.com/v1/playlists/1cUR3W6M4cjvbwKGolLC68', {
+            axios('https://api.spotify.com/v1/playlists/' + id, {
                 method: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + tokenResponse.data.access_token,

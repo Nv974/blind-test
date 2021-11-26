@@ -43,7 +43,7 @@ const Count = ({ time, setTime, killTime }) => {
                 fontSize={25}
                 activeStrokeWidth={5}
                 inActiveStrokeWidth={4}
-            ></CircularProgress>
+            />
             <Text
                 style={{
                     fontSize: 20,
