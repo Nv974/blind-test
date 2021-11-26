@@ -9,7 +9,6 @@ import {
     Platform,
     ImageBackground,
     ActivityIndicator,
-    Dimensions,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { useForm, Controller } from 'react-hook-form';
@@ -35,8 +34,8 @@ const Play = props => {
     const [showTitleInput, setShowTitleInput] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [sound, setSound] = useState();
-    const [time, setTime] = useState(60);
-    const [breakPoint, setbreakPoint] = useState(30);
+    const [time, setTime] = useState(120);
+    const [breakPoint, setbreakPoint] = useState(90);
     const [artistIsFound, setArtistIsFound] = useState(false);
     const [killTime, setKillTime] = useState(false);
     const [error, setError] = useState(2);
@@ -63,6 +62,9 @@ const Play = props => {
     // à été écoutée + de 30 sec
     useEffect(() => {
         if (time === breakPoint) {
+            if (time > 30) {
+                setbreakPoint(time - 30);
+            }
             onChangeTrackHandler();
             dispatch(appActions.setTrackResult(trackResult(false)));
             setShowTitleInput(false);
