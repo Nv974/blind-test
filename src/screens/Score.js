@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, Image, SafeAreaView } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { View, Text, StyleSheet, Button, Image, FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-import datas from '../datas/results';
+//import datas from '../datas/results';
 
 const Score = props => {
     const score = useSelector(state => state.app.score);

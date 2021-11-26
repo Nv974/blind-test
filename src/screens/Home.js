@@ -1,23 +1,13 @@
-import React, { useEffect } from 'react';
-import { View, Button, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import Colors from '../constants/Colors';
-
 //redux
-import * as apiActions from '../store/actions/api';
-import { useSelector, useDispatch } from 'react-redux';
 import Logo from '../components/UI/Logo';
 
 const Home = props => {
     //vars
-    const dispatch = useDispatch();
-    const playlistLoaded = useSelector(state => state.api.playlistLoaded);
 
-    //cycles de vies
-    useEffect(() => {
-        dispatch(apiActions.connect());
-    }, []);
     return (
         <LinearGradient
             style={styles.container}
@@ -29,7 +19,7 @@ const Home = props => {
             <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.play}
-                onPress={() => playlistLoaded && props.navigation.navigate('play')}
+                onPress={() => props.navigation.navigate('playlists')}
             >
                 <Text style={{ color: '#029FB8', fontSize: 22, fontFamily: 'regular' }}>
                     Commencer

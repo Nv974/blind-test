@@ -13,6 +13,8 @@ import {
 import { Audio } from 'expo-av';
 import { useForm, Controller } from 'react-hook-form';
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -23,8 +25,7 @@ import Colors from '../constants/Colors';
 
 //components
 import Count from '../components/Count';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import Start from '../components/Start';
 
 const Play = props => {
     //vars
@@ -39,6 +40,7 @@ const Play = props => {
     const [artistIsFound, setArtistIsFound] = useState(false);
     const [killTime, setKillTime] = useState(false);
     const [error, setError] = useState(2);
+    const [start, setStart] = useState(false);
 
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
@@ -55,7 +57,11 @@ const Play = props => {
             console.log('Playing Sound');
             await sound.playAsync();
         }
-        playSound();
+
+        setTimeout(() => {
+            setStart(true);
+            playSound();
+        }, 5000);
     }, []);
 
     // changement automatique quand la piste
@@ -292,134 +298,144 @@ const Play = props => {
             style={{ flex: 1 }}
         >
             <LinearGradient colors={['#029FB8', '#7259F0']} style={styles.container}>
-                {time > 0 && (
-                    <Count
-                        time={time}
-                        setTime={setTime}
-                        killTime={killTime}
-                        setKillTime={setKillTime}
-                    />
-                )}
-                <Toast config={toastConfig} />
-                <View>
-                    <Text style={styles.score}>Score : {score}</Text>
-                </View>
-
-                <ImageBackground
-                    source={{
-                        uri: !killTime
-                            ? tracks[currentIndex].track.album.images[0].url
-                            : tracks[currentIndex - 1].track.album.images[0].url,
-                    }}
-                    style={{
-                        width: 200,
-                        height: 200,
-                        flexDirection: 'column-reverse',
-                    }}
-                    blurRadius={killTime ? 0 : 40}
-                    borderRadius={7}
-                >
-                    <View>
-                        {!killTime && (
-                            <Text style={styles.label}>
-                                {showTitleInput ? 'Titre du morceau' : "Nom de l'artiste"}
-                            </Text>
+                {start ? (
+                    <>
+                        {time > 0 && (
+                            <Count
+                                time={time}
+                                setTime={setTime}
+                                killTime={killTime}
+                                setKillTime={setKillTime}
+                            />
                         )}
-                    </View>
-                    {!killTime && (
-                        <View style={styles.question}>
-                            <Text>
-                                <Ionicons name='help-outline' size={50} color='white' />
-                            </Text>
+                        <Toast config={toastConfig} />
+                        <View>
+                            <Text style={styles.score}>Score : {score}</Text>
                         </View>
-                    )}
-                </ImageBackground>
-                <Text style={styles.artist}>
-                    {artistIsFound &&
-                        showTitleInput &&
-                        tracks[currentIndex].track.artists[0].name}
-                    {killTime &&
-                        tracks[currentIndex - 1].track.artists[0].name +
-                            ' - ' +
-                            tracks[currentIndex - 1].track.name}
-                </Text>
-
-                <View>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            marginBottom: 40,
-                        }}
-                    >
-                        {!showTitleInput ? (
-                            <Controller
-                                control={control}
-                                render={({ value, field: { onChange } }) => (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={value}
-                                        onChangeText={value => onChange(value)}
-                                        placeholder="Tapez le nom de l'artiste"
-                                        multiline={false}
-                                        autoFocus={true}
-                                        autoCorrect={false}
-                                        onSubmitEditing={handleSubmit(
-                                            onSubmitArtistNameHandler,
-                                        )}
-                                    />
-                                )}
-                                rules={{ required: false }}
-                                name='artist'
-                            />
-                        ) : (
-                            <Controller
-                                control={control}
-                                render={({ value, field: { onChange } }) => (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={value}
-                                        onChangeText={value => onChange(value)}
-                                        placeholder='Tapez le titre du morceau'
-                                        multiline={false}
-                                        autoFocus={true}
-                                        autoCorrect={false}
-                                        onSubmitEditing={handleSubmit(
-                                            onSubmitTitleHandler,
-                                        )}
-                                    />
-                                )}
-                                rules={{ required: false }}
-                                name='title'
-                            />
-                        )}
-
-                        <TouchableOpacity
-                            activeOpacity={0.8}
-                            style={styles.submit}
-                            onPress={
-                                !killTime
-                                    ? handleSubmit(
-                                          !showTitleInput
-                                              ? onSubmitArtistNameHandler
-                                              : onSubmitTitleHandler,
-                                      )
-                                    : () => console.log('un instant')
-                            }
+                        <ImageBackground
+                            source={{
+                                uri: !killTime
+                                    ? tracks[currentIndex].track.album.images[0].url
+                                    : tracks[currentIndex - 1].track.album.images[0].url,
+                            }}
+                            style={{
+                                width: 200,
+                                height: 200,
+                                flexDirection: 'column-reverse',
+                            }}
+                            blurRadius={killTime ? 0 : 40}
+                            borderRadius={7}
                         >
-                            <Text style={{ color: 'white' }}>
-                                {killTime ? (
-                                    <ActivityIndicator color='white' />
+                            <View>
+                                {!killTime && (
+                                    <Text style={styles.label}>
+                                        {showTitleInput
+                                            ? 'Titre du morceau'
+                                            : "Nom de l'artiste"}
+                                    </Text>
+                                )}
+                            </View>
+                            {!killTime && (
+                                <View style={styles.question}>
+                                    <Text>
+                                        <Ionicons
+                                            name='help-outline'
+                                            size={50}
+                                            color='white'
+                                        />
+                                    </Text>
+                                </View>
+                            )}
+                        </ImageBackground>
+                        <Text style={styles.artist}>
+                            {artistIsFound &&
+                                showTitleInput &&
+                                tracks[currentIndex].track.artists[0].name}
+                            {killTime &&
+                                tracks[currentIndex - 1].track.artists[0].name +
+                                    ' - ' +
+                                    tracks[currentIndex - 1].track.name}
+                        </Text>
+                        <View>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    marginBottom: 40,
+                                }}
+                            >
+                                {!showTitleInput ? (
+                                    <Controller
+                                        control={control}
+                                        render={({ value, field: { onChange } }) => (
+                                            <TextInput
+                                                style={styles.input}
+                                                value={value}
+                                                onChangeText={value => onChange(value)}
+                                                placeholder="Tapez le nom de l'artiste"
+                                                multiline={false}
+                                                autoFocus={true}
+                                                autoCorrect={false}
+                                                onSubmitEditing={handleSubmit(
+                                                    onSubmitArtistNameHandler,
+                                                )}
+                                            />
+                                        )}
+                                        rules={{ required: false }}
+                                        name='artist'
+                                    />
                                 ) : (
-                                    <Ionicons
-                                        name='checkmark-outline'
-                                        color='white'
-                                        size={32}
+                                    <Controller
+                                        control={control}
+                                        render={({ value, field: { onChange } }) => (
+                                            <TextInput
+                                                style={styles.input}
+                                                value={value}
+                                                onChangeText={value => onChange(value)}
+                                                placeholder='Tapez le titre du morceau'
+                                                multiline={false}
+                                                autoFocus={true}
+                                                autoCorrect={false}
+                                                onSubmitEditing={handleSubmit(
+                                                    onSubmitTitleHandler,
+                                                )}
+                                            />
+                                        )}
+                                        rules={{ required: false }}
+                                        name='title'
                                     />
                                 )}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+
+                                <TouchableOpacity
+                                    activeOpacity={0.8}
+                                    style={styles.submit}
+                                    onPress={
+                                        !killTime
+                                            ? handleSubmit(
+                                                  !showTitleInput
+                                                      ? onSubmitArtistNameHandler
+                                                      : onSubmitTitleHandler,
+                                              )
+                                            : () => console.log('un instant')
+                                    }
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        {killTime ? (
+                                            <ActivityIndicator color='white' />
+                                        ) : (
+                                            <Ionicons
+                                                name='checkmark-outline'
+                                                color='white'
+                                                size={32}
+                                            />
+                                        )}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </>
+                ) : (
+                    <Start />
+                )}
             </LinearGradient>
         </KeyboardAvoidingView>
     );
