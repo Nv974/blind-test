@@ -190,14 +190,13 @@ const Play = props => {
                 }
             }
         } else {
-            setError(2);
             dispatch(appActions.setTrackResult(trackResult(false)));
             currentTime = time;
             setbreakPoint(currentTime - 30);
-            showSuccess(tracks[currentIndex].track.name);
             setShowTitleInput(false);
             setCurrentIndex(currentIndex + 1);
             onChangeTrackHandler();
+            setError(2);
         }
     };
 
@@ -232,6 +231,7 @@ const Play = props => {
             type: 'success',
             text1: 'Bonne réponse',
             text2: "Il s'agit de " + value,
+            visibilityTime: 2000,
         });
     };
 
@@ -241,6 +241,7 @@ const Play = props => {
             text1: error > 1 ? 'Attention!' : 'Dommage!',
             text2:
                 error > 1 ? 'Il vous reste une chance' : "Ce n'est pas la bonne réponse",
+            visibilityTime: 2000,
         });
     };
 
@@ -250,19 +251,19 @@ const Play = props => {
                 {...props}
                 style={{
                     borderLeftColor: '#009432',
-                    width: 200,
+                    width: 270,
                     position: 'absolute',
-                    right: -20,
+                    right: -90,
                 }}
                 contentContainerStyle={{ paddingHorizontal: 15 }}
                 text1Style={{
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: '400',
                     color: '#009432',
                     fontFamily: 'bold',
                 }}
                 text2Style={{
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: '400',
                     fontFamily: 'regular',
                 }}
@@ -273,12 +274,12 @@ const Play = props => {
             <ErrorToast
                 {...props}
                 text1Style={{
-                    fontSize: 17,
+                    fontSize: 16,
                     color: '#e84118',
                     fontFamily: 'bold',
                 }}
                 text2Style={{
-                    fontSize: 16,
+                    fontSize: 15,
                     fontFamily: 'regular',
                 }}
                 style={{
@@ -339,9 +340,9 @@ const Play = props => {
                                 <View style={styles.question}>
                                     <Text>
                                         <Ionicons
-                                            name='help-outline'
+                                            name="help-outline"
                                             size={50}
-                                            color='white'
+                                            color="white"
                                         />
                                     </Text>
                                 </View>
@@ -352,9 +353,18 @@ const Play = props => {
                                 showTitleInput &&
                                 tracks[currentIndex].track.artists[0].name}
                             {killTime &&
-                                tracks[currentIndex - 1].track.artists[0].name +
-                                    ' - ' +
-                                    tracks[currentIndex - 1].track.name}
+                            tracks[currentIndex - 1].track.artists[0].name.length +
+                                tracks[currentIndex - 1].track.name.length >
+                                33
+                                ? (
+                                      tracks[currentIndex - 1].track.artists[0].name +
+                                      ' - ' +
+                                      tracks[currentIndex - 1].track.name
+                                  ).slice(0, 30) + ' ...'
+                                : killTime &&
+                                  tracks[currentIndex - 1].track.artists[0].name +
+                                      ' - ' +
+                                      tracks[currentIndex - 1].track.name}
                         </Text>
                         <View>
                             <View
@@ -381,7 +391,7 @@ const Play = props => {
                                             />
                                         )}
                                         rules={{ required: false }}
-                                        name='artist'
+                                        name="artist"
                                     />
                                 ) : (
                                     <Controller
@@ -391,7 +401,7 @@ const Play = props => {
                                                 style={styles.input}
                                                 value={value}
                                                 onChangeText={value => onChange(value)}
-                                                placeholder='Tapez le titre du morceau'
+                                                placeholder="Tapez le titre du morceau"
                                                 multiline={false}
                                                 autoFocus={true}
                                                 autoCorrect={false}
@@ -401,7 +411,7 @@ const Play = props => {
                                             />
                                         )}
                                         rules={{ required: false }}
-                                        name='title'
+                                        name="title"
                                     />
                                 )}
 
@@ -420,11 +430,11 @@ const Play = props => {
                                 >
                                     <Text style={{ color: 'white' }}>
                                         {killTime ? (
-                                            <ActivityIndicator color='white' />
+                                            <ActivityIndicator color="white" />
                                         ) : (
                                             <Ionicons
-                                                name='checkmark-outline'
-                                                color='white'
+                                                name="checkmark-outline"
+                                                color="white"
                                                 size={32}
                                             />
                                         )}

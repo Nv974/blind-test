@@ -11,7 +11,10 @@ const Score = props => {
     const results = useSelector(state => state.app.tracksResult);
 
     return (
-        <LinearGradient style={styles.container} colors={['#029FB8', '#7259F0']}>
+        <LinearGradient
+            style={styles.container}
+            colors={['#029FB8', '#7259F0']}
+        >
             <FlatList
                 style={styles.flatlist}
                 ListHeaderComponent={() => (
@@ -36,7 +39,12 @@ const Score = props => {
                                 />
                             </Text>
                             <Text style={styles.informationsText}>
-                                {item.artist} - {item.title}
+                                {item.artist.length + item.title.length > 33
+                                    ? (item.artist + ' - ' + item.title).slice(
+                                          0,
+                                          30,
+                                      ) + ' ...'
+                                    : item.artist + ' - ' + item.title}
                             </Text>
                             <Text style={styles.isFound}>
                                 <Ionicons
@@ -51,7 +59,10 @@ const Score = props => {
                             </Text>
                         </View>
 
-                        <Image source={{ uri: item.image }} style={styles.image} />
+                        <Image
+                            source={{ uri: item.image }}
+                            style={styles.image}
+                        />
                     </View>
                 )}
             />
@@ -103,7 +114,7 @@ const styles = StyleSheet.create({
     informationsText: {
         color: 'white',
         fontFamily: 'regular',
-        fontSize: 20,
+        fontSize: 16,
         justifyContent: 'center',
         alignItems: 'center',
         marginHorizontal: 10,
