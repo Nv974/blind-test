@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 //redux
 import Logo from '../components/UI/Logo';
+import { useDispatch } from 'react-redux';
+import * as apiActions from '../store/actions/api';
 
 const Home = props => {
     //vars
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(apiActions.resetPlaylist());
+    }, [props.navigation]);
 
     return (
         <LinearGradient
