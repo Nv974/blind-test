@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -13,15 +13,16 @@ const Playlists = props => {
     //vars
     const dispatch = useDispatch();
     const playlistLoaded = useSelector(state => state.api.playlistLoaded);
-    console.log(playlistLoaded);
 
-    const onPressPlaylistHanlder = async id => {
-        dispatch(apiActions.connect(id));
+    const [playListSelected, setPlayListSelected] = useState();
+
+    const onPressPlaylistHanlder = async item => {
+        dispatch(apiActions.connect(item.id));
+        setPlayListSelected(item);
     };
-
     useEffect(() => {
         if (playlistLoaded) {
-            props.navigation.navigate('play');
+            props.navigation.navigate('play', { playlist: playListSelected });
         }
     }, [playlistLoaded]);
 
@@ -43,7 +44,7 @@ const Playlists = props => {
                         <Text style={styles.playlistTitle}> {item.name} </Text>
                         <TouchableOpacity
                             activeOpacity={0.8}
-                            onPress={() => onPressPlaylistHanlder(item.id)}
+                            onPress={() => onPressPlaylistHanlder(item)}
                         >
                             <Image
                                 source={{ uri: item.image }}
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
     playlist: {
         alignItems: 'center',
         margin: 10,
+        marginBottom: 15,
     },
     playlistTitle: {
         fontFamily: 'regular',

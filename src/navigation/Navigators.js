@@ -19,7 +19,7 @@ export const StackNavigator = () => (
         <Stack.Screen
             name='play'
             component={PlayScreen}
-            options={{ headerShown: false }}
+            options={{ headerShown: false, headerleft: () => {} }}
         />
         <Stack.Screen
             name='score'

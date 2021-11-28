@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import CircularProgress from 'react-native-circular-progress-indicator';
+import { useSelector, useDispatch } from 'react-redux';
+import * as appActions from '../store/actions/app';
 
-const Count = ({ time, setTime, killTime }) => {
+const Count = ({ setTime, killTime }) => {
+    const time = useSelector(state => state.app.time);
+    const dispatch = useDispatch();
+
     useEffect(() => {
         if (!killTime) {
             do {
                 setTimeout(() => {
-                    setTime(time - 1);
+                    dispatch(appActions.setTime());
                 }, 1000);
             } while (time === 0);
         }

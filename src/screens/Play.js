@@ -9,6 +9,9 @@ import {
     Platform,
     ImageBackground,
     ActivityIndicator,
+    Button,
+    Alert,
+    BackHandler,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { useForm, Controller } from 'react-hook-form';
@@ -19,6 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 import * as appActions from '../store/actions/app';
+import * as apiActions from '../store/actions/api';
 
 //constants
 import Colors from '../constants/Colors';
@@ -26,6 +30,9 @@ import Colors from '../constants/Colors';
 //components
 import Count from '../components/Count';
 import Start from '../components/Start';
+import { useBackHandler } from '@react-native-community/hooks';
+import playlists from '../datas/playlists';
+import { set } from 'react-native-reanimated';
 
 const Play = props => {
     //vars
@@ -35,7 +42,6 @@ const Play = props => {
     const [showTitleInput, setShowTitleInput] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [sound, setSound] = useState();
-    const [time, setTime] = useState(120);
     const [breakPoint, setbreakPoint] = useState(90);
     const [artistIsFound, setArtistIsFound] = useState(false);
     const [killTime, setKillTime] = useState(false);
@@ -45,6 +51,10 @@ const Play = props => {
     //states globaux
     const tracks = useSelector(state => state.api.tracks);
     const score = useSelector(state => state.app.score);
+    const time = useSelector(state => state.app.time);
+
+    //params
+    const playlist = props.route.params.playlist;
 
     useEffect(() => {
         async function playSound() {
@@ -95,7 +105,9 @@ const Play = props => {
     // tout en minuscule / sans caractères spéciaux / sans espaces
     const formatData = data => {
         return data
+            .replace(/ *\([^)]*\) */g, '')
             .replace(/[&\/\\#,+´’!()~%.'":*?<>{} ]/g, '')
+            .replace(/[-]/g, '')
             .replace(/[éèêëęėēÉÈÊËĘĖĒ€]/g, 'e')
             .replace(/[àâªæááäãåāÀÂªÆÁÄÃÅĀ]/g, 'a')
             .replace(/[îïìíįīÎÏÌÍĮĪ]/g, 'i')
@@ -105,6 +117,7 @@ const Play = props => {
             .replace(/[çćčÇĆČ]/g, 'c')
             .replace(/[ñń]/g, 'n')
             .replace(/[$]/g, 's')
+            .replace(/[the\\The\\THE]/g, '')
             .toLowerCase();
     };
 
@@ -123,8 +136,10 @@ const Play = props => {
 
     // handlers
     const onSubmitArtistNameHandler = data => {
-        reset();
+        console.log(data);
         if (data.artist !== undefined && !killTime) {
+            reset();
+
             let numberFound = 0;
 
             // il faut trouvé au moins un artiste du morceau
@@ -137,7 +152,7 @@ const Play = props => {
             if (numberFound !== 0) {
                 const artistName = tracks[currentIndex].track.artists[0].name;
                 showSuccess(artistName);
-                dispatch(appActions.setScore());
+                dispatch(appActions.setScore(10));
                 setArtistIsFound(true);
                 setShowTitleInput(true);
                 setError(2);
@@ -149,22 +164,24 @@ const Play = props => {
                     setArtistIsFound(false);
                     setShowTitleInput(true);
                     setError(2);
+                    dispatch(appActions.setScore(-5));
                 }
             }
         } else {
             setArtistIsFound(false);
             setShowTitleInput(true);
             setError(2);
+            dispatch(appActions.setScore(-5));
         }
     };
 
     const onSubmitTitleHandler = (data, currentTime) => {
-        reset();
         if (data.title !== undefined) {
+            reset();
             const formatedApiData = formatData(tracks[currentIndex].track.name);
             const formatedInputData = formatData(data.title);
-            if (formatedApiData === formatedInputData) {
-                dispatch(appActions.setScore());
+            if (formatedApiData.replace(/ *\([^)]*\) */g, '') === formatedInputData) {
+                dispatch(appActions.setScore(10));
                 dispatch(appActions.setTrackResult(trackResult(true)));
                 currentTime = time;
                 setbreakPoint(currentTime - 30);
@@ -187,6 +204,7 @@ const Play = props => {
                     setShowTitleInput(false);
                     setCurrentIndex(currentIndex + 1);
                     onChangeTrackHandler();
+                    dispatch(appActions.setScore(-5));
                 }
             }
         } else {
@@ -197,6 +215,7 @@ const Play = props => {
             setCurrentIndex(currentIndex + 1);
             onChangeTrackHandler();
             setError(2);
+            dispatch(appActions.setScore(-5));
         }
     };
 
@@ -244,6 +263,53 @@ const Play = props => {
             visibilityTime: 2000,
         });
     };
+
+    // BackHandler.addListener('hardwareBackPress', quitGame);
+
+    // async function quitGame() {
+    //     Alert.alert('Attention', 'Êtes-vous sûr de vouloir quitter cette partie ?', [
+    //         {
+    //             text: 'Annuler',
+    //             onPress: () => null,
+    //         },
+    //         {
+    //             text: 'Oui',
+    //             onPress: async () => {
+    //                 await sound.stopAsync();
+    //                 sound.unloadAsync();
+    //                 dispatch(appActions.resetApp());
+    //                 dispatch(apiActions.resetPlaylistIsLoaded());
+    //                 props.navigation.navigate('home');
+    //             },
+    //         },
+    //     ]);
+    // }
+
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert('Attention', 'Êtes-vous sûr de vouloir quitter cette partie ?', [
+                {
+                    text: 'Annuler',
+                    onPress: () => null,
+                },
+                {
+                    text: 'Oui',
+                    onPress: async () => {
+                        await sound.stopAsync();
+                        sound.unloadAsync();
+                        dispatch(appActions.resetApp());
+                        dispatch(apiActions.resetPlaylistIsLoaded());
+                        props.navigation.navigate('home');
+                    },
+                },
+            ]);
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+        return () => backHandler.remove();
+    }, [sound, props.navigation]);
 
     const toastConfig = {
         success: props => (
@@ -302,12 +368,7 @@ const Play = props => {
                 {start ? (
                     <>
                         {time > 0 && (
-                            <Count
-                                time={time}
-                                setTime={setTime}
-                                killTime={killTime}
-                                setKillTime={setKillTime}
-                            />
+                            <Count killTime={killTime} setKillTime={setKillTime} />
                         )}
                         <Toast config={toastConfig} />
                         <View>
@@ -329,7 +390,17 @@ const Play = props => {
                         >
                             <View>
                                 {!killTime && (
-                                    <Text style={styles.label}>
+                                    <Text
+                                        style={
+                                            showTitleInput
+                                                ? styles.label
+                                                : {
+                                                      ...styles.label,
+                                                      backgroundColor:
+                                                          'rgba(0, 185, 121, 0.7)',
+                                                  }
+                                        }
+                                    >
                                         {showTitleInput
                                             ? 'Titre du morceau'
                                             : "Nom de l'artiste"}
@@ -340,9 +411,9 @@ const Play = props => {
                                 <View style={styles.question}>
                                     <Text>
                                         <Ionicons
-                                            name="help-outline"
+                                            name='help-outline'
                                             size={50}
-                                            color="white"
+                                            color='white'
                                         />
                                     </Text>
                                 </View>
@@ -380,7 +451,9 @@ const Play = props => {
                                             <TextInput
                                                 style={styles.input}
                                                 value={value}
-                                                onChangeText={value => onChange(value)}
+                                                onChangeText={value => {
+                                                    onChange(value);
+                                                }}
                                                 placeholder="Tapez le nom de l'artiste"
                                                 multiline={false}
                                                 autoFocus={true}
@@ -388,10 +461,11 @@ const Play = props => {
                                                 onSubmitEditing={handleSubmit(
                                                     onSubmitArtistNameHandler,
                                                 )}
+                                                onFocus={() => reset()}
                                             />
                                         )}
                                         rules={{ required: false }}
-                                        name="artist"
+                                        name='artist'
                                     />
                                 ) : (
                                     <Controller
@@ -401,17 +475,19 @@ const Play = props => {
                                                 style={styles.input}
                                                 value={value}
                                                 onChangeText={value => onChange(value)}
-                                                placeholder="Tapez le titre du morceau"
+                                                placeholder='Tapez le titre du morceau'
                                                 multiline={false}
+                                                defaultValue=''
                                                 autoFocus={true}
                                                 autoCorrect={false}
+                                                autoComplete='off'
                                                 onSubmitEditing={handleSubmit(
                                                     onSubmitTitleHandler,
                                                 )}
                                             />
                                         )}
                                         rules={{ required: false }}
-                                        name="title"
+                                        name='title'
                                     />
                                 )}
 
@@ -430,11 +506,11 @@ const Play = props => {
                                 >
                                     <Text style={{ color: 'white' }}>
                                         {killTime ? (
-                                            <ActivityIndicator color="white" />
+                                            <ActivityIndicator color='white' />
                                         ) : (
                                             <Ionicons
-                                                name="checkmark-outline"
-                                                color="white"
+                                                name='checkmark-outline'
+                                                color='white'
                                                 size={32}
                                             />
                                         )}
@@ -444,7 +520,7 @@ const Play = props => {
                         </View>
                     </>
                 ) : (
-                    <Start />
+                    <Start playlist={playlist} />
                 )}
             </LinearGradient>
         </KeyboardAvoidingView>
@@ -483,12 +559,14 @@ const styles = StyleSheet.create({
         fontSize: 22,
         color: 'white',
         alignSelf: 'center',
-        backgroundColor: 'rgba(0, 121, 185, 0.6)',
+        backgroundColor: 'rgba(0, 121, 185, 0.7)',
         width: '100%',
         textAlign: 'center',
         fontFamily: 'regular',
         paddingVertical: 5,
         height: 40,
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
     },
     question: {
         position: 'absolute',
