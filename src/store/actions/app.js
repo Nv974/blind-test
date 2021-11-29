@@ -1,3 +1,4 @@
+// réccupération token
 export const FETCH_TOKEN = 'FETCH_TOKEN';
 
 export const fetchToken = token => {
@@ -7,6 +8,7 @@ export const fetchToken = token => {
     };
 };
 
+// modifie le score en fonction des réponses
 export const SET_SCORE = 'SET_SCORE';
 
 export const setScore = score => {
@@ -16,6 +18,8 @@ export const setScore = score => {
     };
 };
 
+// envoie l'objet indiquant le resulat de la question
+// artiste et titre touvé ou pas etc...
 export const SET_TRACK_RESULT = 'SET_TRACK_RESULT';
 
 export const setTrackResult = obj => {
@@ -25,6 +29,7 @@ export const setTrackResult = obj => {
     };
 };
 
+// chronomètre
 export const SET_TIME = 'SET_TIME';
 
 export const setTime = () => {
@@ -33,6 +38,7 @@ export const setTime = () => {
     };
 };
 
+// réinitialise l'app
 export const RESET_APP = 'RESET_APP';
 
 export const resetApp = () => {

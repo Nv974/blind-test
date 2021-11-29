@@ -3,6 +3,7 @@ import axios from 'axios';
 import { encode as btoa } from 'base-64';
 import { fetchToken } from './app';
 
+// connexion a l'api + réccupérer la playlist
 export const connect = id => {
     return dispatch => {
         axios('https://accounts.spotify.com/api/token', {
@@ -32,6 +33,7 @@ export const connect = id => {
     };
 };
 
+// réccupération playlist
 export const GET_PLAYLIST = 'GET_PLAYLIST';
 
 export const getPlaylist = playlist => {
@@ -41,6 +43,7 @@ export const getPlaylist = playlist => {
     };
 };
 
+// vide la playlist
 export const RESET_PLAYLIST = 'RESET_PLAYLIST';
 
 export const resetPlaylist = () => {

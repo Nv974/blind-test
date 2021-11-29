@@ -18,13 +18,13 @@ import * as apiActions from '../store/actions/api';
 
 //import datas from '../datas/results';
 
-
 const Score = props => {
     const score = useSelector(state => state.app.score);
     const results = useSelector(state => state.app.tracksResult);
 
     const dispatch = useDispatch();
 
+    // sécurité retour en arrière
     useEffect(() => {
         const backAction = () => {
             Alert.alert('Attention', 'Revenir aux playlists ?', [

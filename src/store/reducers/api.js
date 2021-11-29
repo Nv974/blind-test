@@ -11,6 +11,7 @@ export default (state = initialState, action = {}) => {
         case GET_PLAYLIST:
             const tracks = action.playlist.tracks.items;
 
+            // renvoie les pistes de manière aléatoire
             function shuffleArray(inputArray) {
                 inputArray.sort(() => Math.random() - 0.5);
             }

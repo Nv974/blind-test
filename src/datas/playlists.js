@@ -20,11 +20,6 @@ const playlists = [
         image: 'https://i.scdn.co/image/ab67706f00000003571c3e893c065ed5832b3a3e',
     },
     {
-        name: 'Rock',
-        id: '37i9dQZF1DWXTHBOfJ8aI7',
-        image: 'https://images.pexels.com/photos/811838/pexels-photo-811838.jpeg?cs=srgb&dl=pexels-edward-eyer-811838.jpg&fm=jpg',
-    },
-    {
         name: 'Années 2000',
         id: '566IoFo73usCCyfxTFV4ka',
         image: 'https://i.scdn.co/image/ab67706f00000003999942da12e79df3201c5b75',
