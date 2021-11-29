@@ -4,11 +4,12 @@ import CircularProgress from 'react-native-circular-progress-indicator';
 import { useSelector, useDispatch } from 'react-redux';
 import * as appActions from '../store/actions/app';
 
-const Count = ({ setTime, killTime }) => {
+const Count = ({ killTime }) => {
     const time = useSelector(state => state.app.time);
     const dispatch = useDispatch();
 
     useEffect(() => {
+        /* si le jeu n'est pas en pause retirer 1 au temps toutes les secondes */
         if (!killTime) {
             do {
                 setTimeout(() => {
@@ -18,6 +19,7 @@ const Count = ({ setTime, killTime }) => {
         }
     }, [killTime, time]);
 
+    // formatage chronomètre
     const seconds = () => {
         if (time / 2 === 60 || time === 60 || time === 0) {
             return '00';

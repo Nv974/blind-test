@@ -13,7 +13,6 @@ const store = createStore(reducer, enhancer);
 import { Provider } from 'react-redux';
 
 import AppNavigator from './src/navigation/AppNavigator';
-import Score from './src/screens/Score';
 
 export default function App() {
     const [loaded] = useFonts({
@@ -28,7 +27,6 @@ export default function App() {
     return (
         <Provider store={store}>
             <AppNavigator />
-            {/* <Score /> */}
             <StatusBar style='light' />
         </Provider>
     );

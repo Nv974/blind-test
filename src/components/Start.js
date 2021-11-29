@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
 const Start = props => {
     const [startTime, setStartTime] = useState(3);
 
+    // compte à rebours avant de jouer 3 sec
+    // + 2 secondes "c'est parti"
     setTimeout(() => {
         if (startTime > 0) {
             setStartTime(startTime - 1);
