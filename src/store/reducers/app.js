@@ -1,9 +1,15 @@
-import { FETCH_TOKEN, SET_SCORE, SET_TRACK_RESULT } from '../actions/app';
+import {
+    FETCH_TOKEN,
+    RESET_APP,
+    SET_SCORE,
+    SET_TIME,
+    SET_TRACK_RESULT,
+} from '../actions/app';
 
 const initialState = {
+    time: 120,
     token: '',
     score: 0,
-    currentSound: '',
     tracksResult: [],
 };
 
@@ -17,12 +23,25 @@ export default (state = initialState, action = {}) => {
         case SET_SCORE:
             return {
                 ...state,
-                score: state.score + 10,
+                score: state.score + action.score,
             };
         case SET_TRACK_RESULT:
             return {
                 ...state,
                 tracksResult: [...state.tracksResult, action.obj],
+            };
+        case SET_TIME:
+            return {
+                ...state,
+                time: state.time - 1,
+            };
+        case RESET_APP:
+            return {
+                ...state,
+                time: 120,
+                score: 0,
+                score: 0,
+                tracksResult: [],
             };
         default:
             return state;

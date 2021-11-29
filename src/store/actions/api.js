@@ -40,3 +40,19 @@ export const getPlaylist = playlist => {
         playlist,
     };
 };
+
+export const RESET_PLAYLIST = 'RESET_PLAYLIST';
+
+export const resetPlaylist = () => {
+    return {
+        type: RESET_PLAYLIST,
+    };
+};
+
+export const RESET_PLAYLIST_IS_LOADED = 'RESET_PLAYLIST_IS_LOADED';
+
+export const resetPlaylistIsLoaded = () => {
+    return {
+        type: RESET_PLAYLIST_IS_LOADED,
+    };
+};

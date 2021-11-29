@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import CircularProgress from 'react-native-circular-progress-indicator';
-import { color } from 'react-native-reanimated';
+import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
 
-const Start = () => {
+const Start = props => {
     const [startTime, setStartTime] = useState(3);
 
     setTimeout(() => {
@@ -15,10 +13,19 @@ const Start = () => {
     return (
         <View style={styles.container}>
             {startTime > 0 ? (
-                <View style={styles.wait}>
-                    <Text style={styles.text}>{startTime}</Text>
-                    <ActivityIndicator size='large' color='white' />
-                </View>
+                <>
+                    <View style={styles.preview}>
+                        <Text style={styles.text}> {props.playlist.name} </Text>
+                        <Image
+                            source={{ uri: props.playlist.image }}
+                            style={{ width: 200, height: 200 }}
+                        />
+                    </View>
+                    <View style={styles.wait}>
+                        <Text style={styles.text}>{startTime}</Text>
+                        <ActivityIndicator size='large' color='white' />
+                    </View>
+                </>
             ) : (
                 <Text style={styles.text}> C'est parti! </Text>
             )}
@@ -40,6 +47,10 @@ const styles = StyleSheet.create({
         fontFamily: 'regular',
         color: 'white',
         fontSize: 30,
+        marginBottom: 20,
+    },
+    preview: {
+        alignItems: 'center',
         marginBottom: 20,
     },
 });

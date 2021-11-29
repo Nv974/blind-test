@@ -7,6 +7,7 @@ import {
     FlatList,
     BackHandler,
     Alert,
+    TouchableOpacity,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,7 +17,6 @@ import * as appActions from '../store/actions/app';
 import * as apiActions from '../store/actions/api';
 
 import datas from '../datas/results';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Score = props => {
     const score = useSelector(state => state.app.score);
@@ -26,7 +26,7 @@ const Score = props => {
 
     useEffect(() => {
         const backAction = () => {
-            Alert.alert('Attention', 'Revenir aux playlists', [
+            Alert.alert('Attention', 'Revenir aux playlists ?', [
                 {
                     text: 'Annuler',
                     onPress: () => null,
@@ -54,6 +54,7 @@ const Score = props => {
         <LinearGradient style={styles.container} colors={['#029FB8', '#7259F0']}>
             <FlatList
                 style={styles.flatlist}
+                showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <View style={styles.header}>
                         <Text style={styles.scoreText}> SCORE : {score} </Text>
