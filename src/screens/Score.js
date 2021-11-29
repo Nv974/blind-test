@@ -16,7 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 import * as appActions from '../store/actions/app';
 import * as apiActions from '../store/actions/api';
 
-import datas from '../datas/results';
+//import datas from '../datas/results';
+
 
 const Score = props => {
     const score = useSelector(state => state.app.score);

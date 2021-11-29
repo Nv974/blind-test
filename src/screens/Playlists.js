@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     playlist: {
         alignItems: 'center',
         margin: 10,
+        marginBottom: 15,
     },
     playlistTitle: {
         fontFamily: 'regular',
