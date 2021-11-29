@@ -33,6 +33,7 @@ const Playlists = props => {
             colors={['#029FB8', '#7259F0']}
         >
             <FlatList
+                showsVerticalScrollIndicator={false}
                 ListHeaderComponent={() => (
                     <Text style={styles.title}> Choisis un Playlist </Text>
                 )}
@@ -41,7 +42,7 @@ const Playlists = props => {
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                     <View style={styles.playlist}>
-                        <Text style={styles.playlistTitle}> {item.name} </Text>
+                        {/* <Text style={styles.playlistTitle}> {item.name} </Text> */}
                         <TouchableOpacity
                             activeOpacity={0.8}
                             onPress={() => onPressPlaylistHanlder(item)}

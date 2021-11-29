@@ -7,7 +7,7 @@ import {
 } from '../actions/app';
 
 const initialState = {
-    time: 10,
+    time: 120,
     token: '',
     score: 0,
     tracksResult: [],
