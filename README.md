@@ -15,7 +15,7 @@ Si vous donnez une mauvaise réponse vous en perdez 10.
 
 L'objectif est de marquer le maximun de points sur une durée de 2 minutes
 
-<div align='center'> https://user-images.githubusercontent.com/74904811/144192098-b0f1d733-6aa7-4810-93ed-8320cef3d832.mp4 </div>
+https://user-images.githubusercontent.com/74904811/144192098-b0f1d733-6aa7-4810-93ed-8320cef3d832.mp4
 
 ## Installation
 
