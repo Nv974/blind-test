@@ -10,7 +10,6 @@ L'application n'est débveloppé que sur android pour le moment
 
 
 Le but est de trouver le nom de l'artiste et du morceau en lecture.
-
 Si vous trouvez le nom de l'artiste ou le morceau vous gagner 10 points.
 Si vous donnez une mauvaise réponse vous en perdez 10.
 
