@@ -1,6 +1,6 @@
 # Music Blind test
 
-Music Blind Test est une application développée en React Native et connectée à l'Api de Spotify.
+Music Blind Test est une application développée en React Native et connectée à l'Api de Spotify. </br>
 L'application n'est débveloppé que sur android pour le moment
 
 <div align='center' >
