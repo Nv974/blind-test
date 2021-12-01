@@ -35,5 +35,6 @@ https://user-images.githubusercontent.com/74904811/144192098-b0f1d733-6aa7-4810-
 
 4. Lancer l'application
 
-    Vous pouvez lancer l'application sur android studio ou sinon scanner le QR Code qui vous est donné.
     Il faut télecharger Expo sur le playStore que votre télphone soit connecté à vote résau wifi sur lequel est lancé le serveur.
+    Vous pouvez lancer l'application sur android studio ou sinon scanner le QR Code qui vous est donné.
+    
