@@ -2,7 +2,7 @@
 
 Music Blind Test est une application développée en React Native et connectée à l'Api de Spotify.
 
-<img src="https://github.com/Nv974/blind-test/spotify.png" width="48">
+<img src="https://github.com/Nv974/blind-test/spotify.png" width="158">
 
 
 ![spotify](https://user-images.githubusercontent.com/74904811/144195033-6c8bc9c9-4130-4386-8bad-472df11703c2.png)
