@@ -1,6 +1,7 @@
 # Music Blind test
 
 Music Blind Test est une application développée en React Native et connectée à l'Api de Spotify.
+L'application n'est débveloppé que sur android pour le moment
 
 <div align='center' >
 <img src="spotify.png" width="60">
@@ -36,4 +37,4 @@ expo start
 4. Lancer l'application
 
 Vous pouvez lancer l'application sur android studio ou sinon scanner le QR Code qui vous est donné.
-Il faut que votre télphone soit connecté à vote résau wifi sur lequel est lancé le serveur.
+Il faut télecharger Expo sur le playStore que votre télphone soit connecté à vote résau wifi sur lequel est lancé le serveur.
